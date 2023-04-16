@@ -99,6 +99,7 @@ function generateObject(dist) {
 navigator.getUserMedia = navigator.getUserMedia ||
     navigator.webkitGetUserMedia ||
     navigator.mozGetUserMedia;
+
 if (navigator.getUserMedia) {
     navigator.getUserMedia({
             audio: true
@@ -137,5 +138,7 @@ if (navigator.getUserMedia) {
 }
 
 document.body.onresize = function () {
-    canvas.width = container.clientWidth;
+    if(canvas.width > container.clientWidth){
+        canvas.width = container.clientWidth;
+    }
 }
