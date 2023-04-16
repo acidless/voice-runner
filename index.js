@@ -1,9 +1,13 @@
-const CANVAS_WIDTH = 500;
-const CANVAS_HEIGHT = 250;
+let CANVAS_WIDTH = 500;
+let CANVAS_HEIGHT = 250;
 let currentVolume = 0;
-let gameX = 0;
+let gameX = 1;
+let gameSpeed = 1;
 let gameInterval;
-const gameOverBlock = document.querySelector(".game-over-block");
+let score = 0;
+const container = document.querySelector(".container");
+const gameOverBlock = container.querySelector(".game-over-block");
+const canvas = container.querySelector("canvas");
 
 const objects = {
     ground: {x: 0, y: CANVAS_HEIGHT - 50, w: CANVAS_WIDTH, h: 2},
@@ -11,32 +15,33 @@ const objects = {
     obstacles: []
 };
 
-const canvas = document.querySelector("canvas");
 canvas.width = CANVAS_WIDTH;
 canvas.height = CANVAS_HEIGHT;
-
 
 const ctx = canvas.getContext("2d");
 ctx.fillStyle = "#000";
 
 startGame();
-function startGame(){
+
+function startGame() {
     clearInterval(gameInterval);
     gameOverBlock.style.display = "none"
 
     gameX = 0;
+    score = 0;
     objects.obstacles = [];
     gameInterval = setInterval(gameLoop, 10);
 }
 
-function gameOver(){
+function gameOver() {
     clearInterval(gameInterval);
     gameOverBlock.style.display = "flex";
+    gameOverBlock.querySelector("span").textContent = score.toString();
 }
 
-async function gameLoop(){
+async function gameLoop() {
     objects.player.y = CANVAS_HEIGHT - 50 - currentVolume * 2;
-    if(objects.player.y + objects.player.h > objects.ground.y){
+    if (objects.player.y + objects.player.h > objects.ground.y) {
         objects.player.y = objects.ground.y - objects.player.h;
     }
 
@@ -55,7 +60,8 @@ async function gameLoop(){
         ctx.fillRect(obst.x - gameX, obst.y, obst.w, obst.h);
     }
 
-    gameX++;
+    gameX += gameSpeed + Math.floor(gameX / 1000) / 100;
+    score++;
     generateObjects();
 }
 
@@ -75,7 +81,7 @@ function generateObjects() {
     }
 }
 
-function generateObject(dist){
+function generateObject(dist) {
     const type = Math.floor(Math.random() * 2);
     const height = Math.random() * 80 + 30;
     let y = CANVAS_HEIGHT - 50 - height;
@@ -128,4 +134,8 @@ if (navigator.getUserMedia) {
         });
 } else {
     console.log("getUserMedia not supported");
+}
+
+document.body.onresize = function () {
+    canvas.width = container.clientWidth;
 }
